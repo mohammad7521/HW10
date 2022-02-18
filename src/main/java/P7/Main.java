@@ -1,6 +1,8 @@
 package P7;
 
 import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -9,28 +11,28 @@ import java.util.concurrent.Executors;
 public class Main {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        File file = new File("C:\\Users\\MMD\\Desktop\\Sample.txt");
+        Scanner scanner = new Scanner(file);
+        DataAdder dataAdder=new DataAdder();
 
-        File file=new File("F:\\Notes.txt");
+//        while(scanner.hasNextLine()){
+//            if (dataAdder.addData(scanner.nextLine())){
+//                System.out.println("data added successfully");
+//            }
+//        }
 
 
-        try {
-            Scanner scanner=new Scanner(file);
-
-            while(scanner.hasNextLine()) {
-                Runnable addData = new Runnable() {
-                    @Override
-                    public void run() {
-                        DataAdder d = new DataAdder(scanner.nextLine());
-                    }
-                };
-                executorService.execute(addData);
+        Runnable r= () -> {
+            while(scanner.hasNextLine()){
+                dataAdder.addData(scanner.nextLine());
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    };
+        };
 
+        ExecutorService executorService=Executors.newFixedThreadPool(5);
+        executorService.execute(r);
+        executorService.shutdown();
+
+    }
 }
